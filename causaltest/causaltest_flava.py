@@ -6,26 +6,21 @@ from PIL import Image
 from tqdm import tqdm
 from transformers import FlavaProcessor, FlavaForPreTraining, BertTokenizer, FlavaFeatureExtractor
 
-# 设置路径
-csv_path = '/home/zhaotian/VL/data/vqa_coco/right_choicedata/cw_isdueto_isthecauseof_flava.csv'
+csv_path = '../multichoice/right_choice/multichoice_rightchoice_flava.csv'
 image_dir = '/home/shared/COCO/Image/val2014/'
 
-# 设置设备
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-# 加载模型和处理器
 model = FlavaForPreTraining.from_pretrained("facebook/flava-full", cache_dir="../../model/").eval().to(device)
 feature_extractor = FlavaFeatureExtractor.from_pretrained("facebook/flava-full", cache_dir="../../model/")
 tokenizer = BertTokenizer.from_pretrained("facebook/flava-full", cache_dir="../../model/")
 processor = FlavaProcessor.from_pretrained("facebook/flava-full", cache_dir="../../model/")
 
-# 预处理图像
 def preprocess_image(image_path):
     image = Image.open(image_path).convert("RGB")
     inputs = feature_extractor(images=image, return_tensors="pt").to(device)
     return inputs
 
-# 计算相似度
 def compute_similarity(image_tensor, texts):
     text_tokens = tokenizer(text=texts, return_tensors="pt", padding="max_length", truncation=True, max_length=77).to(device)
     with torch.no_grad():
@@ -38,18 +33,15 @@ def compute_similarity(image_tensor, texts):
     similarities = (image_features @ text_features.T).squeeze(0)
     return similarities
 
-# 因果词列表
 causal_words = [
     "is due to", "is caused by", "is a result of", "is the effect of",
     "is the consequence of", "because", "owe to", "result in", "cause",
-    "lead to", "give rise to", "bring about to", "original"
+    "lead to", "give rise to", "bring about to"
 ]
 
-# 读取原始数据
 column_names = ['image_id', 'sentence', 'reverse_sentence']
 data = pd.read_csv(csv_path, names=column_names)
 
-# 遍历每个因果词进行测试
 for causal_word in causal_words:
     print(f"\n===== Processing causal word: {causal_word} =====")
     similarity_scores_df = pd.DataFrame(columns=['image_id', 'score', 'reverse_score', 'max_id'])
@@ -60,7 +52,6 @@ for causal_word in causal_words:
             sentence = row['sentence']
             reverse_sentence = row['reverse_sentence']
 
-            # 替换因果词（除了 "original" 模式）
             if causal_word != "original":
                 for original_causal in ["is due to", "is caused by"]:
                     sentence = sentence.replace(original_causal, causal_word)
@@ -82,12 +73,10 @@ for causal_word in causal_words:
             print(f"[Error] index {index}, image_id {row['image_id']}: {str(e)}")
             continue
 
-    # 保存结果
-    output_base_path = f'/home/zhaotian/VL/script/vqa_coco/script/CausalTest/CausaltestResults/causal_vqa_flava_{causal_word.replace(" ", "_")}.csv'
+    output_base_path = f'causal_vqa_flava_{causal_word.replace(" ", "_")}.csv'
     similarity_scores_df.to_csv(output_base_path, index=False)
     print(f"\nResults saved to {output_base_path}")
 
-    # 统计 max_id 分布
     try:
         data2 = pd.read_csv(output_base_path)
         max_id_counts = data2['max_id'].value_counts()
