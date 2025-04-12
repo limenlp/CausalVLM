@@ -41,7 +41,7 @@ def compute_similarity(image_tensor, texts, model, tokenizer):
     return similarities
 
 def process_data(model_name, causal_word, model, image_preprocess, tokenizer):
-    base_csv_path = f'multichoice_rightchoice_{model_name}.csv'
+    base_csv_path = f'../multichoice/right_choice/multichoice_rightchoice_{model_name}.csv'
     if causal_word == "original":
         output_base_path = f'causal_{model_name}_original.csv'
     else:
