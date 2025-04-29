@@ -8,6 +8,7 @@ from tqdm import tqdm
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
+
 def load_model(model_name):
     if model_name == "negclip":
         model_path = './model/negclip.pth'
