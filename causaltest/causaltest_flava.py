@@ -9,6 +9,7 @@ from transformers import FlavaProcessor, FlavaForPreTraining, BertTokenizer, Fla
 csv_path = '../multichoice/right_choice/multichoice_rightchoice_flava.csv'
 image_dir = '/home/shared/COCO/Image/val2014/'
 
+
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 model = FlavaForPreTraining.from_pretrained("facebook/flava-full", cache_dir="../../model/").eval().to(device)
