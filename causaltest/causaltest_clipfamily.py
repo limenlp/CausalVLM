@@ -90,6 +90,7 @@ def process_data(model_name, causal_word, model, image_preprocess, tokenizer):
     total_count = len(data2)
     proportions = max_id_counts / total_count
 
+#
     print(f"\nStatistics for {model_name} with {causal_word}:")
     print("总数据条数:", total_count)
     print("\nmax_id的值分布:")
