@@ -104,7 +104,7 @@ def process_data(model_name, causal_word, model, image_preprocess, tokenizer):
     print("\nmax_id的值比例:")
     print(proportions)
 
-# 主程序
+
 def main():
     models = ["clip_vit_b32", "clip_vit_l14", "negclip", "causalclip", "robustclip"]
     # models = ["causalclip"]
