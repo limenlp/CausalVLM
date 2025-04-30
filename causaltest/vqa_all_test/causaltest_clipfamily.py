@@ -15,7 +15,7 @@ def load_model(model_name):
             import gdown
             gdown.download(id="1ooVVPxB-tvptgmHlIMMFGV3Cg-IrhbRZ", output=model_path, quiet=False)
         model, _, image_preprocess = open_clip.create_model_and_transforms('ViT-B-32', pretrained=model_path, device=device)
-        
+
     elif model_name == "clip_vit_b32":
         model, image_preprocess = clip.load("ViT-B/32", device=device, download_root='/home/zhaotian/VL/model')
     elif model_name == "clip_vit_l14":
@@ -44,7 +44,7 @@ def compute_similarity(image_tensor, texts, model, tokenizer):
     similarities = (image_features @ text_features.T).squeeze(0)
     return similarities
 
-# 数据处理函数
+
 def process_data(model_name, causal_word, model, image_preprocess, tokenizer):
     base_csv_path = f'/home/zhaotian/VL/CausalVLM/datasets/benchmarks/vqa_causal.csv'
     if causal_word == "original":
@@ -61,7 +61,7 @@ def process_data(model_name, causal_word, model, image_preprocess, tokenizer):
             sentence = row['sentence']
             reverse_sentence = row['reverse_sentence']
 
-            # 如果是非原始模式，替换句子中的因果词
+
             if causal_word != "original":
                 sentence = sentence.replace("is due to", causal_word).replace("is caused by", causal_word)
                 reverse_sentence = reverse_sentence.replace("is due to", causal_word).replace("is caused by", causal_word)
@@ -90,13 +90,13 @@ def process_data(model_name, causal_word, model, image_preprocess, tokenizer):
     similarity_scores_df.to_csv(output_base_path, index=False)
     print(f"Results saved to {output_base_path}")
 
-    # 统计 max_id 分布
+
     data2 = pd.read_csv(output_base_path)
     max_id_counts = data2['max_id'].value_counts()
     total_count = len(data2)
     proportions = max_id_counts / total_count
 
-    # 打印统计结果
+
     print(f"\nStatistics for {model_name} with {causal_word}:")
     print("总数据条数:", total_count)
     print("\nmax_id的值分布:")
