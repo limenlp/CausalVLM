@@ -15,7 +15,6 @@ def load_model(model_name):
             import gdown
             gdown.download(id="1ooVVPxB-tvptgmHlIMMFGV3Cg-IrhbRZ", output=model_path, quiet=False)
         model, _, image_preprocess = open_clip.create_model_and_transforms('ViT-B-32', pretrained=model_path, device=device)
-
     elif model_name == "clip_vit_b32":
         model, image_preprocess = clip.load("ViT-B/32", device=device, download_root='/home/zhaotian/VL/model')
     elif model_name == "clip_vit_l14":
@@ -90,7 +89,7 @@ def process_data(model_name, causal_word, model, image_preprocess, tokenizer):
     similarity_scores_df.to_csv(output_base_path, index=False)
     print(f"Results saved to {output_base_path}")
 
-
+    
     data2 = pd.read_csv(output_base_path)
     max_id_counts = data2['max_id'].value_counts()
     total_count = len(data2)
