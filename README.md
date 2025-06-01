@@ -1,5 +1,4 @@
-# What’s Missing in Vision-Language Models? Probing Their Struggles with
-Causal Order Reasoning
+# What’s Missing in Vision-Language Models? Probing Their Struggles with Causal Order Reasoning
 
 
 ## Project Overview
