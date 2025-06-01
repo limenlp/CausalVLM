@@ -15,7 +15,8 @@ Our key findings:
 Our study highlights a major limitation of current VLMs and lays the groundwork for future research on causal understanding.  
 
 ## Code & Data
-> **Note**: Our server is currently offline due to an unexpected flooding incident. We expect it to be back soon.
+> **Note**: Our server is currently offline due to an unexpected flooding incident. The server administrators are working diligently to bring it back, and we hope it will be back online soon.
+
 
 Once the server is back online, more data and code will be updated. We will update and make available the following:
 - Code for **causal test**  
