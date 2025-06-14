@@ -216,7 +216,6 @@ image_id,sentence,reverse_sentence
 89549,There is a knife in the food is due to it being used to cut it.,It is used to cut it is due to there is a knife in the food.
 406253,There are chains on the sidewalk is due to they provide protection.,Protection is provided is due to there are chains on the sidewalk.
 13132,The water looks green is due to algae.,The presence of algae is due to the water looking green.
-45882,"The sentence provided, ""The cat is sitting on the:"", does not contain a causal conjunction or complete causal logic to be replaced or adjusted. Please provide a full sentence with causal reasoning for revision.",The cat is sitting on the suitcase is due to it's comfy.
 537506,The apples have paper on them is due to their use for decoration.,Their use for decoration is due to the apples having paper on them.
 537548,The difference in the wheels is due to their aid in turning.,Their aid in turning is due to the wheels being different.
 537611,The windshield looks opaque is due to it's dirty.,It's dirty is due to the windshield looking opaque.
@@ -928,7 +927,6 @@ image_id,sentence,reverse_sentence
 189588,This picture is blurry is due to there is movement.,The movement is caused by this picture being blurry.
 58539,The man is smiling is due to he's happy.,He's happy is due to the man is smiling.
 189766,Skiers race uphill is due to it's a competition.,It's a competition is due to skiers race uphill.
-320901,"It appears there's an error in the prompt request as the sentence ""There are so Phe"" doesn't contain a clear causal structure or complete thought to modify. Please provide a full sentence with a clear causal conjunction or context for revision.",The presence of so many buses is due to it being bus station season.
 58849,Some dogs are eager to play with humans while others shy away is due to each dog having a different personality.,Each dog has a different personality is due to some dogs being eager to play with humans while others shy away.
 452218,Her reaching up is due to her balancing.,Her balancing is due to her reaching up.
 59022,The kite is in the man's hand is due to he is getting ready to fly it.,His getting ready to fly the kite is due to it being in his hand.
@@ -1013,7 +1011,6 @@ image_id,sentence,reverse_sentence
 65399,The hood is open is due to it being repaired.,It is being repaired is due to the hood is open.
 65433,The dog is jumping is due to it wants to catch the ball.,The dog is jumping is caused by it wants to catch the ball.
 458755,The people are petting the sheep is due to they like them and are at a petting zoo.,They like them and are at a petting zoo is due to the people petting the sheep.
-327701,The presence of the fence is due to it keeping the tennis balls in the court.,"The sentence provided ""It keeps the tennis',"" seems to be incomplete and doesn't contain any explicit causal conjunction or a complete idea to rephrase using 'is caused by' or 'is due to'. Please provide a complete sentence with clear causality for accurate assistance."
 327769,The cat is in the sink is caused by he climbed in there.,He climbed in there is due to the cat being in the sink.
 196879,The stripe is this way on this animal is due to that's how zebras grow stripes.,That's how zebras grow stripes is due to the stripe being this way on this animal.
 197090,The sign is there is due to it is to make people stop.,It is to make people stop is due to the sign being there.
@@ -1633,7 +1630,6 @@ image_id,sentence,reverse_sentence
 368676,People are looking at the animals is due to they like them.,Their liking them is due to people looking at the amazing animals.
 499957,There is cotton on the table is due to someone sewing.,Someone is sewing is due to there being cotton on the table.
 500019,This woman looks relaxed is due to she is pooping.,Her pooping is due to this woman looking relaxed.
-369122,Blankets are spread on the ground is due to they keep off dirt for a picnic.,"The request ""They keep off."" does not contain a causal conjunction or express causality, and thus no causal logic is present that can be maintained or modified in accordance with the instructions. Therefore, no revision applying 'is caused by' or 'is due to' can be provided based on the given sentence content."
 107105,His standing there is due to his waiting.,He is waiting is caused by he is just standing there.
 500514,Someone is wearing suspenders is due to they hold his pants up.,His own pants staying up is due to someone wearing suspenders.
 238472,The person is lying on the sky is due to they fell skiing.,Their fall while skiing is due to the person lying on the sky.

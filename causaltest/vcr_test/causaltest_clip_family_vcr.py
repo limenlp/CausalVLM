@@ -6,20 +6,26 @@ import torch
 from PIL import Image
 from tqdm import tqdm
 
+# 设置设备
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
+image_dir = '/home/zhaotian/VL/data/vcr/vcr1images/'
 
-
+# 模型加载函数
 def load_model(model_name):
     if model_name == "negclip":
-        model_path = './model/negclip.pth'
+        model_path = '/home/zhaotian/VL/model/negclip.pth'
         if not os.path.exists(model_path):
             import gdown
             gdown.download(id="1ooVVPxB-tvptgmHlIMMFGV3Cg-IrhbRZ", output=model_path, quiet=False)
         model, _, image_preprocess = open_clip.create_model_and_transforms('ViT-B-32', pretrained=model_path, device=device)
     elif model_name == "clip_vit_b32":
-        model, image_preprocess = clip.load("ViT-B/32", device=device, download_root='model')
+        model, image_preprocess = clip.load("ViT-B/32", device=device, download_root='/home/zhaotian/VL/model')
     elif model_name == "clip_vit_l14":
-        model, image_preprocess = clip.load("ViT-L/14", device=device, download_root='model')
+        model, image_preprocess = clip.load("ViT-L/14", device=device, download_root='/home/zhaotian/VL/model')
+    elif model_name == "causalclip":
+        model_path = '/home/zhaotian/VL/neg_clip/src/logs/finetune_e6/10_coco_val5k_negclip_256_1e-6_finetune/checkpoints/epoch_13.pth'
+        model_path = '/home/zhaotian/VL/neg_clip/src/logs/0124/8_coco_val5k_negclip_256_1e-6_finetune/checkpoints/epoch_13.pth'
+        model, _, image_preprocess = open_clip.create_model_and_transforms('ViT-B-32', pretrained=model_path, device=device)
     elif model_name == "robustclip":
         model, _, image_preprocess = open_clip.create_model_and_transforms('hf-hub:chs20/fare2-clip')
         model = model.to(device)
@@ -27,10 +33,12 @@ def load_model(model_name):
         raise ValueError(f"Unsupported model_name: {model_name}")
     return model.eval(), image_preprocess
 
+# 图像预处理函数
 def preprocess_image(image_path, image_preprocess):
     image = Image.open(image_path).convert("RGB")
     return image_preprocess(image).unsqueeze(0).to(device)
 
+# 相似度计算函数
 def compute_similarity(image_tensor, texts, model, tokenizer):
     text_tokens = tokenizer(texts).to(device)
     with torch.no_grad():
@@ -41,12 +49,14 @@ def compute_similarity(image_tensor, texts, model, tokenizer):
     similarities = (image_features @ text_features.T).squeeze(0)
     return similarities
 
+# 数据处理函数
 def process_data(model_name, causal_word, model, image_preprocess, tokenizer):
-    base_csv_path = f'../multichoice/right_choice/multichoice_rightchoice_{model_name}.csv'
+    # base_csv_path = f'/home/zhaotian/VL/script/vqa_coco/script/multichoice/multichoice_Results/multichoice_rightchoice_{model_name}.csv'
+    base_csv_path = '/home/zhaotian/VL/data/vcr/filetered_vcr_generated_sentences.csv'
     if causal_word == "original":
-        output_base_path = f'causal_{model_name}_original.csv'
+        output_base_path = f'CausaltestResults/causaltest_vcr/vcr_causal_{model_name}_original.csv'
     else:
-        output_base_path = f'causal_{model_name}_{causal_word.replace(" ", "_")}.csv'
+        output_base_path = f'CausaltestResults/causaltest_vcr/vcr_causal_{model_name}_{causal_word.replace(" ", "_")}.csv'
 
     data = pd.read_csv(base_csv_path)
     similarity_scores_df = pd.DataFrame(columns=['image_id', 'score', 'reverse_score', 'max_id'])
@@ -57,11 +67,13 @@ def process_data(model_name, causal_word, model, image_preprocess, tokenizer):
             sentence = row['sentence']
             reverse_sentence = row['reverse_sentence']
 
+            # 如果是非原始模式，替换句子中的因果词
             if causal_word != "original":
                 sentence = sentence.replace("is due to", causal_word).replace("is caused by", causal_word)
                 reverse_sentence = reverse_sentence.replace("is due to", causal_word).replace("is caused by", causal_word)
 
-            image_path = os.path.join('/home/shared/COCO/Image/val2014/', f"COCO_val2014_{str(image_id).zfill(12)}.jpg")
+            # image_path = os.path.join('/home/shared/COCO/Image/val2014/', f"COCO_val2014_{str(image_id).zfill(12)}.jpg")  # this is the path for VQA
+            image_path = os.path.join(image_dir, image_id)
 
             if not os.path.exists(image_path):
                 print(f"Image {image_path} not found. Skipping...")
@@ -85,12 +97,13 @@ def process_data(model_name, causal_word, model, image_preprocess, tokenizer):
     similarity_scores_df.to_csv(output_base_path, index=False)
     print(f"Results saved to {output_base_path}")
 
+    # 统计 max_id 分布
     data2 = pd.read_csv(output_base_path)
     max_id_counts = data2['max_id'].value_counts()
     total_count = len(data2)
     proportions = max_id_counts / total_count
 
-#
+    # 打印统计结果
     print(f"\nStatistics for {model_name} with {causal_word}:")
     print("总数据条数:", total_count)
     print("\nmax_id的值分布:")
@@ -98,17 +111,20 @@ def process_data(model_name, causal_word, model, image_preprocess, tokenizer):
     print("\nmax_id的值比例:")
     print(proportions)
 
+# 主程序
 def main():
+    # models = ["clip_vit_b32", "clip_vit_l14", "negclip", "causalclip", "robustclip"]
     models = ["clip_vit_b32", "clip_vit_l14", "negclip", "robustclip"]
+    # models = ["causalclip"]
     causal_words = [
         "is due to", "is caused by", "is a result of", "is the effect of",
         "is the consequence of", "because", "owe to", "result in", "cause",
-        "lead to", "give rise to", "bring about to"
+        "lead to", "give rise to", "bring about to", "original"
     ]
 
     for model_name in models:
         model, image_preprocess = load_model(model_name)
-        tokenizer = open_clip.tokenize if model_name in ["negclip", "robustclip"] else clip.tokenize
+        tokenizer = open_clip.tokenize if model_name in ["negclip", "causalclip", "robustclip"] else clip.tokenize
         for causal_word in causal_words:
             process_data(model_name, causal_word, model, image_preprocess, tokenizer)
 
