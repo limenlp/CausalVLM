@@ -6,7 +6,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from tqdm import tqdm
 from PIL import Image
 
-# 加载模型和处理器
+
 # model_name = "llava-hf/llava-1.5-7b-hf"
 # model = LlavaForConditionalGeneration.from_pretrained(model_name)
 # processor = AutoProcessor.from_pretrained(model_name)
@@ -14,60 +14,50 @@ model_name = "lmsys/vicuna-7b-v1.5"  # 使用你指定的模型路径
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForCausalLM.from_pretrained(model_name)
 
-# 文件路径
+
 csv_path = '/home/zhaotian/VL/CausalVLM/datasets/benchmarks/vqa_causal.csv'
 image_dir = '/home/shared/COCO/Image/val2014/'
 
-# 读取CSV文件
+
 data = pd.read_csv(csv_path)
 
-# 定义因果词列表
+
 causal_words = [
     "is due to", "is caused by", "is a result of", "is the effect of",
     "is the consequence of", "because", "owe to", "result in", "cause",
     "lead to", "give rise to", "bring about to"
 ]
-# causal_words = [
-#     "is due to"
-#     # "result in", "cause",
-#     # "lead to", "give rise to", "bring about to"
-# ]
-# causal_words = [
-#     "result in", "cause", "lead to", "give rise to", "bring about to","is caused by", "is a result of", "is the effect of",
-#     "is the consequence of", "because", "owe to"
-# ]
 
-# 获取 "yes" 和 "no" 的 token id
+
+
 Yes_token_id = tokenizer.convert_tokens_to_ids(tokenizer.tokenize("Yes"))
 No_token_id = tokenizer.convert_tokens_to_ids(tokenizer.tokenize("No"))
 
 def get_yes_no_probabilities(question):
-    # 对问题进行 tokenization
+
     inputs = tokenizer(question, return_tensors="pt")
 
-    # 获取模型的输出
+
     with torch.no_grad():
         outputs = model(**inputs)
 
-    # 获取 logits
+
     logits = outputs.logits
 
 
-    # 计算最后一层输出对应的概率分布
+
     softmax = torch.nn.functional.softmax(logits[0, -1], dim=-1)
 
     # 获取 "yes"、"Yes"、"no" 和 "No" 的概率
     yes_prob = softmax[Yes_token_id].item()
     no_prob = softmax[No_token_id].item()
-    # yes_prob_up = softmax[yes_up_token_id].item()
-    # no_prob_up = softmax[no_up_token_id].item()
 
-    # 获取 softmax 中最大概率值
+
     max_prob = torch.max(softmax).item()
 
     return yes_prob, no_prob
 
-# 定义获取概率的函数
+
 def get_yes_no_probabilities_old(prompt, image):
     inputs = processor(text=prompt, images=image, return_tensors="pt")
     outputs = model.generate(**inputs, max_new_tokens=3, output_scores=True, return_dict_in_generate=True)
@@ -80,7 +70,7 @@ def get_yes_no_probabilities_old(prompt, image):
 
 batch_size = 5
 
-# 依次对每个因果词进行测试
+
 for causal_word in causal_words:
     if causal_word == "original":
         output_csv_path = "/home/zhaotian/VL/all_final_data/all_vqa_results/vicuna_original.csv"
@@ -102,11 +92,7 @@ for causal_word in causal_words:
                 reverse_sentence = reverse_sentence.replace("is due to", causal_word).replace("is caused by",
                                                                                               causal_word)
 
-            # image_path = os.path.join(image_dir, f"COCO_val2014_{str(image_id).zfill(12)}.jpg")
-            # image = Image.open(image_path)
-
-            # prompt_sentence = f"USER: <image>\n{sentence} Given such an image, considering the above sentence, does it reflect the proper causal relationship in the image? Just answer me Yes or No. ASSISTANT:"
-            # prompt_reverse_sentence = f"USER: <image>\n{reverse_sentence} Given such an image, considering the above sentence, does it reflect the proper causal relationship in the image? Just answer me Yes or No. ASSISTANT:"
+            
             prompt_sentence = f"USER: {sentence} does it reflect the proper causal relationship? ASSISTANT:"
             prompt_reverse_sentence = f"USER: {reverse_sentence} does it reflect the proper causal relationship? ASSISTANT:"
 

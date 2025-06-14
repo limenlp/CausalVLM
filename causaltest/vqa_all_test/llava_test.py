@@ -5,36 +5,34 @@ from transformers import AutoProcessor, LlavaForConditionalGeneration
 from tqdm import tqdm
 from PIL import Image
 
-# 加载模型和处理器
+
 model_name = "llava-hf/llava-1.5-7b-hf"
 model = LlavaForConditionalGeneration.from_pretrained(model_name)
 processor = AutoProcessor.from_pretrained(model_name)
 
-# 文件路径
+
 csv_path = '/home/zhaotian/VL/script/vqa_coco/script/CausalTest/vqa_causal.csv'
 image_dir = '/home/shared/COCO/Image/val2014/'
 
-# 读取CSV文件
+
 column_names = ['image_id', 'sentence', 'reverse_sentence']
 data = pd.read_csv(csv_path, names=column_names)
 
 # 定义因果词列表
-# causal_words = [
-#     "is due to", "is caused by", "is a result of", "is the effect of",
-#     "is the consequence of", "because", "owe to", "result in", "cause",
-#     "lead to", "give rise to", "bring about to"
-# ]
 causal_words = [
-    "give rise to", "bring about to"
+    "is due to", "is caused by", "is a result of", "is the effect of",
+    "is the consequence of", "because", "owe to", "result in", "cause",
+    "lead to", "give rise to", "bring about to"
 ]
 
-# 获取 "yes" 和 "no" 的 token id
+
+
 tokenizer = processor.tokenizer
 Yes_token_id = tokenizer.convert_tokens_to_ids(tokenizer.tokenize("Yes"))
 No_token_id = tokenizer.convert_tokens_to_ids(tokenizer.tokenize("No"))
 
 
-# 定义获取概率的函数
+
 def get_yes_no_probabilities(prompt, image):
     inputs = processor(text=prompt, images=image, return_tensors="pt")
     outputs = model.generate(**inputs, max_new_tokens=3, output_scores=True, return_dict_in_generate=True)
@@ -47,7 +45,7 @@ def get_yes_no_probabilities(prompt, image):
 
 batch_size = 5
 
-# 依次对每个因果词进行测试
+
 for causal_word in causal_words:
     if causal_word == "original":
         output_csv_path = "/home/zhaotian/VL/script/vqa_coco/script/CausalTest/CausaltestResults/LLAVA_results/LLava_results/3_LLAVA_7b_original.csv"
@@ -72,8 +70,6 @@ for causal_word in causal_words:
             image_path = os.path.join(image_dir, f"COCO_val2014_{str(image_id).zfill(12)}.jpg")
             image = Image.open(image_path)
 
-            # prompt_sentence = f"USER: <image>\n{sentence} Given such an image, considering the above sentence, does it reflect the proper causal relationship in the image? Just answer me Yes or No. ASSISTANT:"
-            # prompt_reverse_sentence = f"USER: <image>\n{reverse_sentence} Given such an image, considering the above sentence, does it reflect the proper causal relationship in the image? Just answer me Yes or No. ASSISTANT:"
             prompt_sentence = f"USER: <image>\n{sentence} Given such an image, considering the above sentence, does it reflect the proper causal relationship in the image? ASSISTANT:"
             prompt_reverse_sentence = f"USER: <image>\n{reverse_sentence} Given such an image, considering the above sentence, does it reflect the proper causal relationship in the image? ASSISTANT:"
 
